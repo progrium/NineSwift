@@ -1,0 +1,68 @@
+#!/bin/zsh
+set -e
+DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+BASE=xcode-base
+BASE_TEMPLATE=macos-15
+XCODE_VERSION=16.4
+VM=nineswift-dev
+
+CPUS=8
+MEMORY=16
+
+case "$1" in
+  up|start)
+    if ! limactl list --format '{{.Name}}' | grep -qx "$VM"; then
+      limactl clone "$BASE" "$VM" \
+        --cpus "$CPUS" \
+        --memory "$MEMORY" \
+        --mount-none
+    fi
+
+    limactl start "$VM"
+    ;;
+
+  sh|shell)
+    cd "$DIR"
+    shift # drop $1 for $@
+    exec limactl shell --sync . "$VM" "$@"
+    ;;
+
+  down|stop)
+    limactl stop "$VM"
+    ;;
+
+  reset)
+    limactl stop "$VM" 2>/dev/null || true
+    limactl delete "$VM"
+    ;;
+
+  base-init)
+    read -s "?New VM password: " NEWPASS
+    echo
+    read -s "?Confirm password: " CONFIRM
+    echo
+
+    [[ "$NEWPASS" == "$CONFIRM" ]] || {
+        echo "Passwords don't match"
+        exit 1
+    }
+
+    limactl start --name "$BASE" "template:$BASE_TEMPLATE"
+    printf '%s\n' "$NEWPASS" |
+        limactl shell --tty=false "$BASE" zsh -c '
+            IFS= read -r NEWPASS
+            OLD="$(cat "$HOME/password")"
+            dscl . -passwd "/Users/$USER" "$OLD" "$NEWPASS"
+            rm -f "$HOME/password"    
+'
+    limactl copy "$DIR/.dev/base-provision" "$BASE:/tmp/provision.sh"
+    limactl shell "$BASE" chmod +x /tmp/provision.sh
+    limactl shell "$BASE" /tmp/provision.sh "$XCODE_VERSION"
+    limactl stop "$BASE"
+    ;;
+
+  *)
+    echo "usage: $0 {up|shell|stop|reset|base-init}"
+    exit 1
+esac

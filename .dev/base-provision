@@ -1,0 +1,31 @@
+#!/bin/sh
+set -e
+
+XCODE_VERSION="${1:?usage: $0 <xcode-version>}"
+# xcodes names the app with a full x.y.z version, e.g. 16.4 -> Xcode-16.4.0.app
+case "$XCODE_VERSION" in
+  *.*.*) XCODE_APP_VERSION="$XCODE_VERSION" ;;
+  *.*) XCODE_APP_VERSION="$XCODE_VERSION.0" ;;
+  *) XCODE_APP_VERSION="$XCODE_VERSION.0.0" ;;
+esac
+
+# sudo op up front to cache 
+sudo mkdir -p /usr/local/bin
+ 
+# install xcodes tool
+curl -sL -o /tmp/xcodes.zip \
+  https://github.com/XcodesOrg/xcodes/releases/latest/download/xcodes.zip
+unzip /tmp/xcodes.zip -d /tmp/xcodes
+sudo install -m 755 /tmp/xcodes/xcodes /usr/local/bin/xcodes
+
+# fix SSL quirk when using xcodes
+sudo ifconfig en0 mtu 1280
+
+# install and select xcode
+xcodes install "$XCODE_VERSION" --experimental-unxip
+sudo xcode-select --switch "/Applications/Xcode-$XCODE_APP_VERSION.app"
+
+# download platform sdks
+xcodebuild -downloadPlatform iOS
+xcodebuild -downloadPlatform watchOS
+xcodebuild -downloadPlatform tvOS

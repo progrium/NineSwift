@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Shared Info.plist for the macOS, iOS, watchOS and tvOS NineExplorer bundles.
+  The Makefile substitutes __PLATFORM__ / __PLATFORM_LOWER__ / __BUNDLE_ID__,
+  removes the keys that do not apply to the platform being built (the
+  *_KEYS lists in the Makefile). The watch bundle overrides the bundle id,
+  executable, MinimumOSVersion and UIDeviceFamily; the tvOS bundle overrides
+  MinimumOSVersion and UIDeviceFamily and drops the orientation keys.
+-->
+<plist version="1.0">
+<dict>
+	<!-- common -->
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>NineExplorer</string>
+	<key>CFBundleExecutable</key>
+	<string>NineExplorer</string>
+	<key>CFBundleIdentifier</key>
+	<string>__BUNDLE_ID__</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>NineExplorer</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>CFBundleSupportedPlatforms</key>
+	<array>
+		<string>__PLATFORM__</string>
+	</array>
+	<key>DTPlatformName</key>
+	<string>__PLATFORM_LOWER__</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>NineExplorer — a minimal 9P file explorer.</string>
+
+	<!-- macOS only -->
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.developer-tools</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSSupportsAutomaticGraphicsSwitching</key>
+	<true/>
+
+	<!-- iOS, watchOS and tvOS (watch and tv override the values) -->
+	<key>MinimumOSVersion</key>
+	<string>17.0</string>
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>1</integer>
+		<integer>2</integer>
+	</array>
+
+	<!-- watchOS only -->
+	<key>WKApplication</key>
+	<true/>
+	<key>WKCompanionAppBundleIdentifier</key>
+	<string>__BUNDLE_ID__</string>
+	<key>WKRunsIndependentlyOfCompanionApp</key>
+	<false/>
+
+	<!-- iOS and tvOS (tvOS drops the orientation keys) -->
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+	</dict>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>NineExplorer connects to 9P file servers on your local network.</string>
+</dict>
+</plist>
